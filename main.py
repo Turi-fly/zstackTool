@@ -28,8 +28,8 @@ def main():
             conf['offering'], conf['template'],
             conf['l3network'],
             conf['host'],
-            conf['zone'],
             conf['cluster'],
+            conf['zone'],
             conf['description'],
             res
         )
