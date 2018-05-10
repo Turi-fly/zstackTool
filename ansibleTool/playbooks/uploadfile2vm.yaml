@@ -1,0 +1,33 @@
+---
+# 默认使用root执行的
+# 在远程KVM宿主机上创建临时目录
+# 传递vm的xml文件到远程主机上去
+# 然后把ip, 主机网络配置文件以及脚本传递到传递到临时目录
+# 然后执行临时脚本
+# 脚本执行成功就删除临时目录
+
+- hosts:  "{{ phost }}"
+  gather_facts: no
+  tasks:
+  - name: create tmp cache directory
+    file: path=/tmp/{{ hostname }} state=directory
+
+  - name: sync /etc/sysconfig/network to remote server  tmp cache directory
+    copy: src=../transfile/network dest=/tmp/{{ hostname }}/network
+
+  - name: sync /etc/sysconfig/network-scripts/ifcfg-eth0 to remote server  tmp cache directory
+    copy: src=../transfile/ifcfg-eth0 dest=/tmp/{{ hostname }}/ifcfg-eth0
+
+  - name: sync python upload script to remote server  tmp cache directory
+    copy: src=../uploadfile2vm.py  dest=/tmp/{{ hostname }}/uploadfile2vm.py mode=0755
+
+  - name: execute python script and upload file to guest os
+    shell: /tmp/{{ hostname }}/uploadfile2vm.py {{ imagename }} {{ item.key }}  {{ item.value }}
+    with_items:
+      - {key: "/tmp/{{ hostname }}/network", value: "/etc/sysconfig/network"}
+      - {key: "/tmp/{{ hostname }}/ifcfg-eth0", value: "/etc/sysconfig/network-scripts/ifcfg-eth0"}
+    register: result
+
+  - name: delete tmp cache director
+    file: path=/tmp/{{ hostname }} state=absent
+    when: result|success

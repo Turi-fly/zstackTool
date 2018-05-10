@@ -1,0 +1,3 @@
+NETWORKING_IPV6=off
+HOSTNAME=liubaobaotest
+NETWORKING=yes

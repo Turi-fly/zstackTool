@@ -1,0 +1,10 @@
+host1:
+   name: zw-vm-gold-admin-web-120-10.yn.com 
+   ip: 192.168.120.10
+   offering: 8core8g
+   template: Template-CentOS6.7
+   l3network: vlan1120
+   host: 
+   zone: 兆维机房
+   cluster: 兆维机房
+   description: gold-admin-web
